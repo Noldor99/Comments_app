@@ -40,12 +40,15 @@ export class PostCommentController {
 
   @Get()
   @ApiQuery({ name: 'parentId', type: Number, required: false, example: 1 })
+  @ApiQuery({ name: 'page', type: Number, required: false, example: 1 })
+  @ApiQuery({ name: 'perPage', type: Number, required: false, example: 25 })
   topLevelComments(@Query() queryParams) {
-    if (queryParams.parentId) {
-      return this.postCommentService.getCommentsByParentId(
-        queryParams.parentId,
-      );
+    const { parentId, page, perPage } = queryParams;
+
+    if (parentId) {
+      return this.postCommentService.getCommentsByParentId(parentId);
     }
-    return this.postCommentService.getTopLevelComments();
+
+    return this.postCommentService.getTopLevelComments(page, perPage);
   }
 }

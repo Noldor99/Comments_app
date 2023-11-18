@@ -55,13 +55,18 @@ export class PostCommentService {
     });
   }
 
-  async getTopLevelComments(): Promise<PostComment[]> {
+  async getTopLevelComments(
+    page: number,
+    perPage: number,
+  ): Promise<PostComment[]> {
     return this.postCommentRepository
       .createQueryBuilder('comment')
       .leftJoinAndSelect('comment.user', 'user')
       .leftJoinAndSelect('comment.parent', 'parent')
       .where('comment.parent IS NULL')
       .orderBy('comment.createdAt', 'DESC')
+      .skip((page - 1) * perPage)
+      .take(perPage)
       .getMany();
   }
 

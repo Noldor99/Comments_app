@@ -19,7 +19,7 @@ export class CreatePostCommentDto {
   userId: number;
 
   @ApiProperty({
-    example: null,
+    example: 1,
     description:
       'The ID of the parent comment. If null, it indicates a top-level comment.',
     required: false,
@@ -28,7 +28,7 @@ export class CreatePostCommentDto {
   parentId: null | number;
 
   @ApiProperty({
-    example: 0,
+    example: 1,
     description: 'The number of likes for the comment.',
   })
   @IsNumber({}, { message: 'Likes should be a number' })
