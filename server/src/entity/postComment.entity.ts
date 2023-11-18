@@ -9,7 +9,7 @@ import {
 import { AbstractEntity } from 'src/database/abstract.entity';
 import { User } from './user.entity';
 
-@Entity('postCpmment')
+@Entity('postCpmments')
 export class PostComment extends AbstractEntity<PostComment> {
   @Column()
   content: string;
@@ -27,6 +27,9 @@ export class PostComment extends AbstractEntity<PostComment> {
 
   @OneToMany(() => PostComment, (comment) => comment.parent)
   replies: PostComment[];
+
+  @Column({ nullable: true })
+  image: string;
 
   @CreateDateColumn()
   createdAt: Date;

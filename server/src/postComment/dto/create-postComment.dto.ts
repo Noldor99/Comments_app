@@ -34,4 +34,12 @@ export class CreatePostCommentDto {
   @IsNumber({}, { message: 'Likes should be a number' })
   @IsOptional()
   likes: number;
+
+  @ApiProperty({
+    type: 'string',
+    format: 'binary',
+    description: 'Image of the device',
+    required: false,
+  })
+  image: any;
 }

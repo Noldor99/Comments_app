@@ -4,21 +4,33 @@ import { PostComment } from 'src/entity/postComment.entity';
 import { Repository } from 'typeorm';
 import { CreatePostCommentDto } from './dto/create-postComment.dto';
 import { Equal } from 'typeorm';
+import { FilesService } from 'src/files/files.service';
 
 @Injectable()
 export class PostCommentService {
   constructor(
     @InjectRepository(PostComment)
     private postCommentRepository: Repository<PostComment>,
+    private fileService: FilesService,
   ) {}
 
-  async addPostComment(dto: CreatePostCommentDto): Promise<PostComment> {
+  async addPostComment(
+    dto: CreatePostCommentDto,
+    image?: any,
+  ): Promise<PostComment> {
     const { content, userId, likes, parentId } = dto;
+
+    let fileName: string | null = null;
+    if (image) {
+      fileName = await this.fileService.createFile(image);
+    }
+
     const addPostComment = this.postCommentRepository.create({
       likes,
       content,
+      image: fileName,
       user: { id: userId },
-      parent: { id: parentId },
+      parent: parentId ? { id: parentId } : null,
     });
 
     await this.postCommentRepository.save(addPostComment);
@@ -46,6 +58,8 @@ export class PostCommentService {
   async getTopLevelComments(): Promise<PostComment[]> {
     return this.postCommentRepository
       .createQueryBuilder('comment')
+      .leftJoinAndSelect('comment.user', 'user')
+      .leftJoinAndSelect('comment.parent', 'parent')
       .where('comment.parent IS NULL')
       .orderBy('comment.createdAt', 'DESC')
       .getMany();

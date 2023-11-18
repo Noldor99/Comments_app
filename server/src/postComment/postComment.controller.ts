@@ -6,10 +6,13 @@ import {
   Delete,
   Get,
   Query,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { PostCommentService } from './postComment.service';
 import { CreatePostCommentDto } from './dto/create-postComment.dto';
-import { ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiConsumes, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('postComment')
 @Controller('postComment')
@@ -17,8 +20,13 @@ export class PostCommentController {
   constructor(private readonly postCommentService: PostCommentService) {}
 
   @Post()
-  create(@Body() createPostCommentDto: CreatePostCommentDto) {
-    return this.postCommentService.addPostComment(createPostCommentDto);
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('image'))
+  create(
+    @Body() createPostCommentDto: CreatePostCommentDto,
+    @UploadedFile() image,
+  ) {
+    return this.postCommentService.addPostComment(createPostCommentDto, image);
   }
   @Get(':id')
   getComment(@Param('id') id: number) {
