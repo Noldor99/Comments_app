@@ -1,5 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsOptional, IsNumber } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsOptional,
+  IsNumber,
+  Validate,
+} from 'class-validator';
+import { HtmlTagsValidator } from 'src/validator/html-tags.validator';
 
 export class CreatePostCommentDto {
   @ApiProperty({
@@ -8,6 +15,7 @@ export class CreatePostCommentDto {
   })
   @IsNotEmpty({ message: 'Text should not be empty' })
   @IsString({ message: 'Text should be a string' })
+  @Validate(HtmlTagsValidator)
   content: string;
 
   @ApiProperty({
@@ -31,7 +39,7 @@ export class CreatePostCommentDto {
     example: 1,
     description: 'The number of likes for the comment.',
   })
-  @IsNumber({}, { message: 'Likes should be a number' })
+  // @IsNumber({}, { message: 'Likes should be a number' })
   @IsOptional()
   likes: number;
 

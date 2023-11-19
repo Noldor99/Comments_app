@@ -58,13 +58,30 @@ export class PostCommentService {
   async getTopLevelComments(
     page: number,
     perPage: number,
+    sortBy: string,
+    sortOrder: 'ASC' | 'DESC',
   ): Promise<PostComment[]> {
-    return this.postCommentRepository
+    const queryBuilder = this.postCommentRepository
       .createQueryBuilder('comment')
       .leftJoinAndSelect('comment.user', 'user')
-      .leftJoinAndSelect('comment.parent', 'parent')
-      .where('comment.parent IS NULL')
-      .orderBy('comment.createdAt', 'DESC')
+      .where('comment.parent IS NULL');
+
+    switch (sortBy) {
+      case 'userName':
+        queryBuilder.orderBy('user.email', sortOrder);
+        break;
+      case 'email':
+        queryBuilder.orderBy('user.email', sortOrder);
+        break;
+      case 'createdAt':
+        queryBuilder.orderBy('comment.createdAt', sortOrder);
+        break;
+      default:
+        queryBuilder.orderBy('comment.createdAt', 'DESC');
+        break;
+    }
+
+    return queryBuilder
       .skip((page - 1) * perPage)
       .take(perPage)
       .getMany();
