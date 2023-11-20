@@ -18,7 +18,7 @@ export class PostCommentService {
     dto: CreatePostCommentDto,
     image?: any,
   ): Promise<PostComment> {
-    const { content, userId, likes, parentId } = dto;
+    const { content, userId, parentId } = dto;
 
     let fileName: string | null = null;
     if (image) {
@@ -26,7 +26,7 @@ export class PostCommentService {
     }
 
     const addPostComment = this.postCommentRepository.create({
-      likes,
+      likes: 0,
       content,
       image: fileName,
       user: { id: userId },

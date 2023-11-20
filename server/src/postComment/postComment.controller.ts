@@ -44,7 +44,14 @@ export class PostCommentController {
   }
 
   @Get()
-  @ApiQuery({ name: 'parentId', type: Number, required: false, example: 1 })
+  @ApiQuery({
+    name: 'parentId',
+    type: Number,
+    required: false,
+    example: 1,
+    description:
+      'для отримання всих дочірніх коментраів писати id, для верхніх коментів не писати',
+  })
   @ApiQuery({ name: 'page', type: Number, required: false, example: 1 })
   @ApiQuery({ name: 'perPage', type: Number, required: false, example: 25 })
   @ApiQuery({
@@ -52,12 +59,14 @@ export class PostCommentController {
     type: String,
     required: false,
     example: 'createdAt',
+    description: 'userName email createdAt',
   })
   @ApiQuery({
     name: 'sortOrder',
     type: String,
     required: false,
     example: 'DESC',
+    description: 'ASC DESC',
   })
   topLevelCommentsTable(@Query() queryParams) {
     const { page, perPage, sortBy, sortOrder, parentId } = queryParams;
