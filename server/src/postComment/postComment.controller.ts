@@ -8,21 +8,20 @@ import {
   Query,
   UseInterceptors,
   UploadedFile,
-  BadRequestException,
+  UseGuards,
 } from '@nestjs/common';
 import { PostCommentService } from './postComment.service';
 import { CreatePostCommentDto } from './dto/create-postComment.dto';
-import { ApiConsumes, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiConsumes, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { FileValidationService } from 'src/validator/FileValidatorService';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @ApiTags('postComment')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @Controller('postComment')
 export class PostCommentController {
-  constructor(
-    private readonly postCommentService: PostCommentService,
-    private readonly fileValidationService: FileValidationService,
-  ) {}
+  constructor(private readonly postCommentService: PostCommentService) {}
 
   @Post()
   @ApiConsumes('multipart/form-data')
@@ -31,12 +30,6 @@ export class PostCommentController {
     @Body() createPostCommentDto: CreatePostCommentDto,
     @UploadedFile() image,
   ) {
-    // if (!image) {
-    //   throw new BadRequestException('Файл не був завантажений');
-    // }
-
-    // await this.fileValidationService.validateImage(image, 320, 240);
-
     return this.postCommentService.addPostComment(createPostCommentDto, image);
   }
 
@@ -51,6 +44,7 @@ export class PostCommentController {
   }
 
   @Get()
+  @ApiQuery({ name: 'parentId', type: Number, required: false, example: 1 })
   @ApiQuery({ name: 'page', type: Number, required: false, example: 1 })
   @ApiQuery({ name: 'perPage', type: Number, required: false, example: 25 })
   @ApiQuery({
@@ -66,7 +60,12 @@ export class PostCommentController {
     example: 'DESC',
   })
   topLevelCommentsTable(@Query() queryParams) {
-    const { page, perPage, sortBy, sortOrder } = queryParams;
+    const { page, perPage, sortBy, sortOrder, parentId } = queryParams;
+    if (parentId) {
+      return this.postCommentService.getCommentsByParentId(
+        queryParams.parentId,
+      );
+    }
 
     return this.postCommentService.getTopLevelComments(
       page,

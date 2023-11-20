@@ -60,7 +60,7 @@ export class PostCommentService {
     perPage: number,
     sortBy: string,
     sortOrder: 'ASC' | 'DESC',
-  ): Promise<PostComment[]> {
+  ) {
     const queryBuilder = this.postCommentRepository
       .createQueryBuilder('comment')
       .leftJoinAndSelect('comment.user', 'user')
@@ -81,19 +81,26 @@ export class PostCommentService {
         break;
     }
 
-    return queryBuilder
+    // Execute the query to get paginated results
+    const [comments, total] = await queryBuilder
       .skip((page - 1) * perPage)
       .take(perPage)
-      .getMany();
+      .getManyAndCount();
+
+    return { comments, total };
   }
 
-  async getCommentsByParentId(parentId: string) {
+  async getCommentsByParentId(
+    parentId: string,
+  ): Promise<{ comments: PostComment[] }> {
     try {
-      return this.postCommentRepository.find({
+      const comments = await this.postCommentRepository.find({
         where: { parent: Equal(parentId) },
         relations: ['user', 'parent'],
         order: { createdAt: 'DESC' },
       });
+
+      return { comments };
     } catch (e) {
       throw new BadRequestException('Something bad happened', {
         cause: new Error(e.message),
