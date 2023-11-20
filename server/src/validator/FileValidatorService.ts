@@ -11,7 +11,7 @@ export class FileValidationService {
     maxHeight: number,
   ): Promise<void> {
     // Перевірка розширення файлу
-    const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif'];
+    const allowedExtensions = ['.jpg', '.jpeg', '.png'];
     const fileExtension = extname(file.originalname).toLowerCase();
 
     if (!allowedExtensions.includes(fileExtension)) {
