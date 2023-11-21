@@ -16,7 +16,7 @@ import { CreatePostCommentDto } from './dto/create-postComment.dto';
 import { ApiBearerAuth, ApiConsumes, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { FileValidationService } from 'src/validator/fileValidatorService';
+import { FileValidationService } from 'src/validator/FileValidatorService';
 import { ValidationPipe } from 'src/pipes/validation.pipe';
 
 @ApiTags('postComment')
