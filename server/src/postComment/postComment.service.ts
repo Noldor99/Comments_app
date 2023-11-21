@@ -4,31 +4,39 @@ import { PostComment } from 'src/entity/postComment.entity';
 import { Repository } from 'typeorm';
 import { CreatePostCommentDto } from './dto/create-postComment.dto';
 import { Equal } from 'typeorm';
-import { FilesService } from 'src/files/files.service';
+import { FileService, FileType } from 'src/files/files.service';
 
 @Injectable()
 export class PostCommentService {
   constructor(
     @InjectRepository(PostComment)
     private postCommentRepository: Repository<PostComment>,
-    private fileService: FilesService,
+    private fileService: FileService,
   ) {}
 
   async addPostComment(
     dto: CreatePostCommentDto,
-    image?: any,
+    image,
+    text,
   ): Promise<PostComment> {
     const { content, userId, parentId } = dto;
 
-    let fileName: string | null = null;
+    let audioPath = null;
+    let picturePath = null;
+
+    if (text) {
+      audioPath = await this.fileService.createFile(FileType.TEXT, text);
+    }
+
     if (image) {
-      fileName = await this.fileService.createFile(image);
+      picturePath = await this.fileService.createFile(FileType.IMAGE, image);
     }
 
     const addPostComment = this.postCommentRepository.create({
       likes: 0,
       content,
-      image: fileName,
+      text: audioPath,
+      image: picturePath,
       user: { id: userId },
       parent: parentId ? { id: parentId } : null,
     });

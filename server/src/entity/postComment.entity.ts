@@ -31,6 +31,9 @@ export class PostComment extends AbstractEntity<PostComment> {
   @Column({ nullable: true })
   image: string;
 
+  @Column({ nullable: true })
+  text: string;
+
   @CreateDateColumn()
   createdAt: Date;
 

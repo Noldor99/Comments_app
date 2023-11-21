@@ -9,28 +9,56 @@ import {
   UseInterceptors,
   UploadedFile,
   UseGuards,
+  UploadedFiles,
 } from '@nestjs/common';
 import { PostCommentService } from './postComment.service';
 import { CreatePostCommentDto } from './dto/create-postComment.dto';
 import { ApiBearerAuth, ApiConsumes, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { FileValidationService } from 'src/validator/fileValidatorService';
 
 @ApiTags('postComment')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('postComment')
 export class PostCommentController {
-  constructor(private readonly postCommentService: PostCommentService) {}
+  constructor(
+    private readonly postCommentService: PostCommentService,
+    private readonly fileValidationService: FileValidationService,
+  ) {}
 
   @Post()
   @ApiConsumes('multipart/form-data')
-  @UseInterceptors(FileInterceptor('image'))
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'image', maxCount: 1 },
+      { name: 'text', maxCount: 1 },
+    ]),
+  )
   async create(
-    @Body() createPostCommentDto: CreatePostCommentDto,
-    @UploadedFile() image,
+    @Body()
+    createPostCommentDto: CreatePostCommentDto,
+    @UploadedFiles() files,
   ) {
-    return this.postCommentService.addPostComment(createPostCommentDto, image);
+    try {
+      const { image, text } = files;
+
+      // Перевірка наявності хоча б одного файлу і валідація
+      await this.fileValidationService.validateImage(
+        image ? image[0] : null,
+        text ? text[0] : null,
+      );
+
+      // Виклик сервісної функції для обробки коментарів
+      return this.postCommentService.addPostComment(
+        createPostCommentDto,
+        image ? image[0] : null,
+        text ? text[0] : null,
+      );
+    } catch (error) {
+      return { error: error.message };
+    }
   }
 
   @Get(':id')

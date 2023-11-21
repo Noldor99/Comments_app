@@ -1,23 +1,22 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsOptional, Validate } from 'class-validator';
-import { HtmlTagsValidator } from 'src/validator/html-tags.validator';
+import { Type } from 'class-transformer';
+import { IsNotEmpty, IsOptional, MinLength, IsInt } from 'class-validator';
 
 export class CreatePostCommentDto {
   @ApiProperty({
     example: 'This is a comment text.',
     description: 'The text content of the comment.',
   })
-  @IsNotEmpty({ message: 'Text should not be empty' })
-  @IsString({ message: 'Text should be a string' })
-  @Validate(HtmlTagsValidator)
+  @MinLength(6, { message: 'Content must be at least 6 characters long' })
   content: string;
 
   @ApiProperty({
     example: 1,
     description: 'The user ID who created the comment.',
   })
+  @Type(() => Number)
+  @IsInt({ message: 'UserId should be an integer' })
   @IsNotEmpty({ message: 'UserId should not be empty' })
-  @IsString({ message: 'UserId should be a string' })
   userId: number;
 
   @ApiProperty({
@@ -26,6 +25,8 @@ export class CreatePostCommentDto {
       'The ID of the parent comment. If null, it indicates a top-level comment.',
     required: false,
   })
+  @Type(() => Number)
+  @IsInt({ message: 'parentId should be an integer' })
   @IsOptional()
   parentId: null | number;
 
@@ -36,4 +37,12 @@ export class CreatePostCommentDto {
     required: false,
   })
   image: any;
+
+  @ApiProperty({
+    type: 'string',
+    format: 'binary',
+    description: 'File of the device',
+    required: false,
+  })
+  text: any;
 }

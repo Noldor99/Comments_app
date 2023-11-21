@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  server:
+    container_name: main
+    build:
+      context: . # Вказуйте шлях до папки з Dockerfile та файлами сервера
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - .:/app # Монтувати лише папку сервера, не всю структуру
+    ports:
+      - 7777:7777
+    command: npm run start:dev
+    depends_on:
+      - postgres
+    restart: always
+
+  postgres:
+    container_name: postgres
+    image: postgres:12
+    env_file:
+      - .env
+    environment:
+      PG_DATA: /var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  pgdata:
