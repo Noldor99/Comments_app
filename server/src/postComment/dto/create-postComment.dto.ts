@@ -1,6 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsNotEmpty, IsOptional, MinLength, IsInt } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsOptional,
+  MinLength,
+  IsInt,
+  Validate,
+} from 'class-validator';
+import { HtmlTagsValidator } from 'src/validator/html-tags.validator';
 
 export class CreatePostCommentDto {
   @ApiProperty({
@@ -8,6 +15,10 @@ export class CreatePostCommentDto {
     description: 'The text content of the comment.',
   })
   @MinLength(6, { message: 'Content must be at least 6 characters long' })
+  @Validate(HtmlTagsValidator, {
+    message:
+      'Дозволені тільки наступні HTML теги: <a>, <code>, <i>, <strong>. Текст повинен бути валідним XHTML.',
+  })
   content: string;
 
   @ApiProperty({

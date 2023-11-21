@@ -7,9 +7,9 @@ import {
   Get,
   Query,
   UseInterceptors,
-  UploadedFile,
   UseGuards,
   UploadedFiles,
+  UsePipes,
 } from '@nestjs/common';
 import { PostCommentService } from './postComment.service';
 import { CreatePostCommentDto } from './dto/create-postComment.dto';
@@ -17,8 +17,10 @@ import { ApiBearerAuth, ApiConsumes, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { FileValidationService } from 'src/validator/fileValidatorService';
+import { ValidationPipe } from 'src/pipes/validation.pipe';
 
 @ApiTags('postComment')
+@UsePipes(ValidationPipe)
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('postComment')
