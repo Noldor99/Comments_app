@@ -1,19 +1,17 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
+import CONNECTION from './db.connection';
 
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
+      //@ts-ignore
       useFactory: (configService: ConfigService) => ({
-        type: 'postgres',
-        host: process.env.POSTGRES_HOST,
-        port: Number(process.env.POSTGRES_PORT) || 5432,
-        username: process.env.POSTGRES_USER,
-        password: process.env.POSTGRES_PASSWORD,
-        database: process.env.POSTGRES_DB,
+        ...CONNECTION,
         entities: [__dirname + '/../**/*.entity{.js, .ts}'],
-        synchronize: true,
+        synchronize: false,
       }),
       inject: [ConfigService],
     }),

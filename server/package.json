@@ -17,7 +17,11 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "typeorm": "typeorm-ts-node-commonjs",
+    "migrations": "npm run typeorm migration:generate -- -d src/typeorm.config.ts src/migrations/auto",
+    "migrate": "npm run typeorm migration:run -- -d src/typeorm.config.ts",
+    "revert": "npm run typeorm migration:revert -- -d src/typeorm.config.ts"
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",
@@ -32,6 +36,7 @@
     "bcryptjs": "^2.4.3",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
+    "dotenv": "^16.3.1",
     "image-size": "^1.0.2",
     "jimp": "^0.22.10",
     "multer": "^1.4.5-lts.1",

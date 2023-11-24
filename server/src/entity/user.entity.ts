@@ -1,15 +1,19 @@
-import { AbstractEntity } from 'src/database/abstract.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
   OneToMany,
+  PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { PostComment } from './postComment.entity';
+import { Power } from './power.entity';
 
 @Entity()
-export class User extends AbstractEntity<User> {
+export class User {
+  @PrimaryGeneratedColumn()
+  id: number;
+
   @Column()
   email: string;
 
@@ -20,6 +24,9 @@ export class User extends AbstractEntity<User> {
     onDelete: 'CASCADE',
   })
   postComments: PostComment[];
+
+  @OneToMany(() => Power, (power) => power.user, { onDelete: 'CASCADE' })
+  powers: Power[];
 
   @CreateDateColumn()
   createdAt: Date;

@@ -4,13 +4,16 @@ import {
   Entity,
   ManyToOne,
   OneToMany,
+  PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { AbstractEntity } from 'src/database/abstract.entity';
 import { User } from './user.entity';
 
 @Entity('postCpmments')
-export class PostComment extends AbstractEntity<PostComment> {
+export class PostComment {
+  @PrimaryGeneratedColumn()
+  id: number;
+
   @Column()
   content: string;
 
